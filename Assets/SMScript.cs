@@ -12,16 +12,14 @@ public class SMScript : MonoBehaviour
     [SerializeField] private float jumpForce = 12;
 
     private enum MovementState { idle, running, jumping, attack }
-    private bool attack = false;
+    private bool attacking = false;
 
-    // Start is called before the first frame update
     void Start()
     {
         anim = GetComponent<Animator>();
         sprite = GetComponent<SpriteRenderer>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         dirX = Input.GetAxis("Horizontal");
@@ -49,7 +47,7 @@ public class SMScript : MonoBehaviour
         {
             state = MovementState.jumping;
         }
-        else if (attack)
+        else if (attacking)
         {
             state = MovementState.attack;
         }
@@ -73,14 +71,26 @@ public class SMScript : MonoBehaviour
 
     IEnumerator AttackCoroutine()
     {
-        attack = true;
+        attacking = true;
         anim.SetTrigger("attack");
 
-        // Wait for a short duration (adjust as needed)
         yield return new WaitForSeconds(0.5f);
 
-        // Reset attack state
-        attack = false;
+        attacking = false;
         anim.ResetTrigger("attack");
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (attacking && other.CompareTag("box")) 
+        {
+            Rigidbody2D otherRigidbody = other.GetComponent<Rigidbody2D>();
+            if (otherRigidbody != null)
+            {
+                Vector2 direction = other.transform.position - transform.position;
+
+                otherRigidbody.AddForce(-direction.normalized * 500f, ForceMode2D.Impulse); 
+            }
+        }
     }
 }
