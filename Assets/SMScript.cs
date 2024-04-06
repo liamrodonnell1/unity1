@@ -6,7 +6,6 @@ public class SMScript : MonoBehaviour
     public Rigidbody2D myRigidBody;
     private Animator anim;
     private SpriteRenderer sprite;
-    public int BoxLayer;
     public CapsuleCollider2D weaponCollider;
 
     private float dirX = 0;
