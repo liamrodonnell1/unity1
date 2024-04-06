@@ -6,10 +6,15 @@ public class SMScript : MonoBehaviour
     public Rigidbody2D myRigidBody;
     private Animator anim;
     private SpriteRenderer sprite;
+    public int BoxLayer;
+    public CapsuleCollider2D weaponCollider;
 
     private float dirX = 0;
     [SerializeField] private float moveSpeed = 7;
     [SerializeField] private float jumpForce = 12;
+    [SerializeField] private float weaponSpeed = 7;
+
+
 
     private enum MovementState { idle, running, jumping, attack }
     private bool attacking = false;
@@ -73,24 +78,40 @@ public class SMScript : MonoBehaviour
     {
         attacking = true;
         anim.SetTrigger("attack");
+        Vector2 offset = weaponCollider.offset;
+        if(dirX>0){
+            if(offset.x >=0){
+                offset.x += weaponSpeed;
+                offset.y += weaponSpeed/3;
+            }
+            else{
+                offset.x *= -1;
+                offset.x -= weaponSpeed;
+                offset.y += weaponSpeed/3;
+            }
+        }
+        else{
+            if(offset.x < 0){
+
+            
+                offset.x += weaponSpeed;
+                offset.y += weaponSpeed/3;
+            }
+            else{
+                offset.x *= -1;
+                offset.x -= weaponSpeed;
+                offset.y += weaponSpeed/3;
+            }
+        }
 
         yield return new WaitForSeconds(0.5f);
 
         attacking = false;
         anim.ResetTrigger("attack");
+
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (attacking && other.CompareTag("box")) 
-        {
-            Rigidbody2D otherRigidbody = other.GetComponent<Rigidbody2D>();
-            if (otherRigidbody != null)
-            {
-                Vector2 direction = other.transform.position - transform.position;
 
-                otherRigidbody.AddForce(-direction.normalized * 500f, ForceMode2D.Impulse); 
-            }
-        }
-    }
+
+
 }
